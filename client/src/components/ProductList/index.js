@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ProductItem from '../ProductItem';
-import { configureStore } from '../../utils/store';
+import configureStore from '../../utils/store';
 import { UPDATE_PRODUCTS } from '../../utils/actions';
 import { useQuery } from '@apollo/client';
 import { QUERY_PRODUCTS } from '../../utils/queries';
@@ -8,15 +8,15 @@ import { idbPromise } from '../../utils/helpers';
 import spinner from '../../assets/spinner.gif';
 
 function ProductList() {
-  const [state, dispatch] = configureStore();
+  const store = configureStore();
 
-  const { currentCategory } = state;
+  const currentCategory = store.getState();
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
   useEffect(() => {
     if (data) {
-      dispatch({
+      store.dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products,
       });
@@ -25,20 +25,20 @@ function ProductList() {
       });
     } else if (!loading) {
       idbPromise('products', 'get').then((products) => {
-        dispatch({
+        store.dispatch({
           type: UPDATE_PRODUCTS,
           products: products,
         });
       });
     }
-  }, [data, loading, dispatch]);
+  }, [data, loading, store, store.dispatch]);
 
   function filterProducts() {
     if (!currentCategory) {
-      return state.products;
+      return currentCategory.shop.products;
     }
 
-    return state.products.filter(
+    return currentCategory.shop.products.filter(
       (product) => product.category._id === currentCategory
     );
   }
@@ -46,7 +46,7 @@ function ProductList() {
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
-      {state.products.length ? (
+      {currentCategory.shop.products.length ? (
         <div className="flex-row">
           {filterProducts().map((product) => (
             <ProductItem

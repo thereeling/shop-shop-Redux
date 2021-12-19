@@ -1,5 +1,5 @@
 import React from 'react';
-import { configureStore } from "../../utils/store";
+import configureStore from "../../utils/store";
 import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
 
