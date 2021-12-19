@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-
+import { useDispatch, useSelector } from 'react-redux';
 import Cart from '../components/Cart';
-import store from '../utils/store';
 import {
   REMOVE_FROM_CART,
   UPDATE_CART_QUANTITY,
@@ -21,8 +20,11 @@ function Detail() {
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
-  const { products, cart } = store.getState();
-  console.log(store.getState());
+  const products = useSelector((state) => state.products);
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+
+
   useEffect(() => {
     // already in global store
     if (products.length) {
@@ -30,7 +32,7 @@ function Detail() {
     }
     // retrieved from server
     else if (data) {
-      store.dispatch({
+      dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products,
       });
@@ -42,18 +44,18 @@ function Detail() {
     // get cache from idb
     else if (!loading) {
       idbPromise('products', 'get').then((indexedProducts) => {
-        store.dispatch({
+        dispatch({
           type: UPDATE_PRODUCTS,
           products: indexedProducts,
         });
       });
     }
-  }, [products, data, loading, id]);
+  }, [products, data, loading, id, dispatch]);
 
   const addToCart = () => {
     const itemInCart = cart.find((cartItem) => cartItem._id === id);
     if (itemInCart) {
-      store.dispatch({
+      dispatch({
         type: UPDATE_CART_QUANTITY,
         _id: id,
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
@@ -63,7 +65,7 @@ function Detail() {
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
       });
     } else {
-      store.dispatch({
+      dispatch({
         type: ADD_TO_CART,
         product: { ...currentProduct, purchaseQuantity: 1 },
       });
@@ -72,7 +74,7 @@ function Detail() {
   };
 
   const removeFromCart = () => {
-    store.dispatch({
+    dispatch({
       type: REMOVE_FROM_CART,
       _id: currentProduct._id,
     });

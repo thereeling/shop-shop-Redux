@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { pluralize } from "../../utils/helpers"
-import store from "../../utils/store";
 import { ADD_TO_CART, UPDATE_CART_QUANTITY } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
+import { useDispatch, useSelector } from 'react-redux';
 
 function ProductItem(item) {
 
@@ -14,13 +14,13 @@ function ProductItem(item) {
     price,
     quantity
   } = item;
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
-  const { cart } = store.getState();
-  
   const addToCart = () => {
     const itemInCart = cart.find((cartItem) => cartItem._id === _id)
     if (itemInCart) {
-      store.dispatch({
+      dispatch({
         type: UPDATE_CART_QUANTITY,
         _id: _id,
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
@@ -30,7 +30,7 @@ function ProductItem(item) {
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
       });
     } else {
-      store.dispatch({
+      dispatch({
         type: ADD_TO_CART,
         product: { ...item, purchaseQuantity: 1 }
       });
