@@ -3,7 +3,7 @@ import ProductItem from '../ProductItem';
 import store from '../../utils/store';
 import { UPDATE_PRODUCTS } from '../../utils/actions';
 import { useQuery } from '@apollo/client';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { QUERY_PRODUCTS } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
 import spinner from '../../assets/spinner.gif';
@@ -13,7 +13,10 @@ function ProductList() {
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
+  const currentCategory = useSelector((state) => state.currentCategory);
+  const products = useSelector((state) => state.products);
   const dispatch = useDispatch();
+  console.log(products);
 
   useEffect(() => {
     if (data) {
@@ -35,20 +38,20 @@ function ProductList() {
   }, [data, loading, dispatch]);
 
   function filterProducts() {
-    if (!store.getState().currentCategory) {
-      return store.getState().products;
+    if (!currentCategory) {
+      return products;
     }
     
 
-    return store.getState().products.filter(
-      (product) => product.category._id === store.getState().currentCategory
+    return products.filter(
+      (product) => product.category._id === currentCategory
     );
   }
 
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
-      {store.getState().products.length ? (
+      {products.length ? (
         <div className="flex-row">
           {filterProducts().map((product) => (
             <ProductItem
