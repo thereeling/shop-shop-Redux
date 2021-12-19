@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import configureStore from '../../utils/store';
+import store from '../../utils/store';
 import {
   UPDATE_CATEGORIES,
   UPDATE_CURRENT_CATEGORY,
@@ -9,10 +9,8 @@ import { QUERY_CATEGORIES } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
 
 function CategoryMenu() {
-  const store = configureStore();
-
-  const categories = store.getState();
-
+  const {categories} = store.getState();
+  
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {
@@ -32,7 +30,7 @@ function CategoryMenu() {
         });
       });
     }
-  }, [categoryData, loading, store, store.dispatch]);
+  }, [categoryData, loading]);
 
   const handleClick = (id) => {
     store.dispatch({
@@ -44,7 +42,7 @@ function CategoryMenu() {
   return (
     <div>
       <h2>Choose a Category:</h2>
-      {categories.shop.categories.map((item) => (
+      {categories.map((item) => (
         <button
           key={item._id}
           onClick={() => {

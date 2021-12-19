@@ -1,54 +1,54 @@
 import React, { useEffect } from 'react';
 import ProductItem from '../ProductItem';
-import configureStore from '../../utils/store';
+import store from '../../utils/store';
 import { UPDATE_PRODUCTS } from '../../utils/actions';
 import { useQuery } from '@apollo/client';
+import { useDispatch } from 'react-redux';
 import { QUERY_PRODUCTS } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
 import spinner from '../../assets/spinner.gif';
 
 
 function ProductList() {
-  const store = configureStore();
-
-  const currentCategory = store.getState();
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (data) {
-      store.dispatch({
+      dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products,
       });
       data.products.forEach((product) => {
         idbPromise('products', 'put', product);
-      });
-      console.log(store.getState())
+      }); 
     } else if (!loading) {
       idbPromise('products', 'get').then((products) => {
-        store.dispatch({
+        dispatch({
           type: UPDATE_PRODUCTS,
           products: products,
         });
       });
     }
-  }, [data, loading, store, store.dispatch]);
+  }, [data, loading, dispatch]);
 
   function filterProducts() {
-    if (!currentCategory) {
-      return currentCategory.shop.products;
+    if (!store.getState().currentCategory) {
+      return store.getState().products;
     }
+    
 
-    return currentCategory.shop.products.filter(
-      (product) => product.category._id === currentCategory
+    return store.getState().products.filter(
+      (product) => product.category._id === store.getState().currentCategory
     );
   }
 
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
-      {currentCategory.shop.products.length ? (
+      {store.getState().products.length ? (
         <div className="flex-row">
           {filterProducts().map((product) => (
             <ProductItem

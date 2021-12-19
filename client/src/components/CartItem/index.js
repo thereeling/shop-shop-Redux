@@ -1,11 +1,9 @@
 import React from 'react';
-import configureStore from "../../utils/store";
+import store from "../../utils/store";
 import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
 
 const CartItem = ({ item }) => {
-
-  const store = configureStore();
 
   const removeFromCart = item => {
     store.dispatch({

@@ -5,18 +5,16 @@ import { QUERY_CHECKOUT } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
 import CartItem from '../CartItem';
 import Auth from '../../utils/auth';
-import configureStore from '../../utils/store';
+import store from '../../utils/store';
 import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from '../../utils/actions';
 import './style.css';
 
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Cart = () => {
-  const store = configureStore();
   const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
-
-  const cart = store.getState();
-
+  const {cart} = store.getState();
+  const state = store.getState();
   useEffect(() => {
     if (data) {
       stripePromise.then((res) => {
@@ -31,18 +29,19 @@ const Cart = () => {
       store.dispatch({ type: ADD_MULTIPLE_TO_CART, products: [...cart] });
     }
 
-    if (!cart.shop.cart.length) {
+    if (!cart.length) {
       getCart();
     }
-  }, [cart.shop.cart.length, store, store.dispatch]);
+  }, [cart.length]);
 
   function toggleCart() {
     store.dispatch({ type: TOGGLE_CART });
+    console.log(state.cartOpen)
   }
 
   function calculateTotal() {
     let sum = 0;
-    cart.shop.cart.forEach((item) => {
+    cart.forEach((item) => {
       sum += item.price * item.purchaseQuantity;
     });
     return sum.toFixed(2);
@@ -51,7 +50,7 @@ const Cart = () => {
   function submitCheckout() {
     const productIds = [];
 
-    cart.shop.cart.forEach((item) => {
+    cart.forEach((item) => {
       for (let i = 0; i < item.purchaseQuantity; i++) {
         productIds.push(item._id);
       }
@@ -62,7 +61,7 @@ const Cart = () => {
     });
   }
 
-  if (!cart.shop.cartOpen) {
+  if (!state.cartOpen) {
     return (
       <div className="cart-closed" onClick={toggleCart}>
         <span role="img" aria-label="trash">
@@ -78,9 +77,9 @@ const Cart = () => {
         [close]
       </div>
       <h2>Shopping Cart</h2>
-      {cart.shop.cart.length ? (
+      {cart.length ? (
         <div>
-          {cart.shop.cart.map((item) => (
+          {cart.map((item) => (
             <CartItem key={item._id} item={item} />
           ))}
 
