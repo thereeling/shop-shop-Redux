@@ -7,6 +7,7 @@ import { QUERY_PRODUCTS } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
 import spinner from '../../assets/spinner.gif';
 
+
 function ProductList() {
   const store = configureStore();
 
@@ -23,6 +24,7 @@ function ProductList() {
       data.products.forEach((product) => {
         idbPromise('products', 'put', product);
       });
+      console.log(store.getState())
     } else if (!loading) {
       idbPromise('products', 'get').then((products) => {
         store.dispatch({

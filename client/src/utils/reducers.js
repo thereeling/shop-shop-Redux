@@ -22,26 +22,26 @@ const initialState = {
 export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_PRODUCTS:
-      return {
+      return Object.assign({}, state, {
         ...state,
         products: [...action.products],
-      };
+      });
 
     case ADD_TO_CART:
-      return {
+      return Object.assign({}, state,{
         ...state,
         cartOpen: true,
         cart: [...state.cart, action.product],
-      };
+      });
 
     case ADD_MULTIPLE_TO_CART:
-      return {
+      return Object.assign({}, state, {
         ...state,
         cart: [...state.cart, ...action.products],
-      };
+      });
 
     case UPDATE_CART_QUANTITY:
-      return {
+      return Object.assign({}, state,{
         ...state,
         cartOpen: true,
         cart: state.cart.map(product => {
@@ -50,43 +50,43 @@ export const reducer = (state = initialState, action) => {
           }
           return product
         })
-      };
+      });
 
     case REMOVE_FROM_CART:
       let newState = state.cart.filter(product => {
         return product._id !== action._id;
       });
 
-      return {
+      return Object.assign({}, state,{
         ...state,
         cartOpen: newState.length > 0,
         cart: newState
-      };
+      });
 
     case CLEAR_CART:
-      return {
+      return Object.assign({}, state,{
         ...state,
         cartOpen: false,
         cart: []
-      };
+      });
 
     case TOGGLE_CART:
-      return {
+      return Object.assign({}, state,{
         ...state,
         cartOpen: !state.cartOpen
-      };
+      });
 
     case UPDATE_CATEGORIES:
-      return {
+      return Object.assign({}, state,{
         ...state,
         categories: [...action.categories],
-      };
+      });
 
     case UPDATE_CURRENT_CATEGORY:
-      return {
+      return Object.assign({}, state,{
         ...state,
         currentCategory: action.currentCategory
-      }
+      })
 
     default:
       return state;

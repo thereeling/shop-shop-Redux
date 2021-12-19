@@ -13,8 +13,6 @@ function CategoryMenu() {
 
   const categories = store.getState();
 
-  console.log(categories);
-
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {

@@ -14,12 +14,8 @@ import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Nav from './components/Nav';
-import { Provider } from 'react-redux';
 import Success from './pages/Success';
 import OrderHistory from './pages/OrderHistory';
-import configureStore from './utils/store';
-
-const store = configureStore();
 
 const httpLink = createHttpLink({
   uri: '/graphql',
@@ -45,7 +41,7 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <div>
-          <Provider store={store}>
+          
             <Nav />
             <Switch>
               <Route exact path="/" component={Home} />
@@ -56,7 +52,7 @@ function App() {
               <Route exact path="/products/:id" component={Detail} />
               <Route component={NoMatch} />
             </Switch>
-          </Provider>
+         
         </div>
       </Router>
     </ApolloProvider>
